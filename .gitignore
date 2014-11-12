@@ -1,0 +1,5 @@
+nimcache
+nakefile
+bin
+tests/*
+!tests/test_*.nim

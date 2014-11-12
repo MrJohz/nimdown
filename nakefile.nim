@@ -5,16 +5,30 @@ import terminal
 
 const
   ROOT_TEST_DIR = "tests"
+  BIN_DIR = "bin"
+  BIN_NAME = "nimdown" & ExeExt
+
 
 task "clean", "Removes nimcache folders, compiled exes":
   removeDir("nimcache")
-  removeDir("bin")
+  removeDir(BIN_DIR)
 
 task "build", "Builds nimdown executable":
-  createDir("bin")
-  direshell("nim", "c", "--verbosity:0", "--out:bin/nimdown", "nimdown.nim")
+  createDir(BIN_DIR)
+  direshell("nim", "c", "--verbosity:0", "--out:" & (BIN_DIR / BIN_NAME), "nimdown.nim")
 
-task "test", "Runs tests":
+task "test-spec", "Test nimdown against the CommonMark spec (in ./CommonMark":
+  if needsRefresh(BIN_NAME, "nimdown.nim"):
+    runTask("build")
+
+  withDir "CommonMark":
+    shell("make", "test", "PROG=.." / BIN_DIR / BIN_NAME)
+
+task "test-unit", "Test nimdown against internal unit tests":
   for ftype, testf in walkDir(ROOT_TEST_DIR):
-    if testf.startsWith(os.joinPath(ROOT_TEST_DIR, "test_")) and testf.endsWith(".nim"):
+    if testf.startsWith(ROOT_TEST_DIR / "test_") and testf.endsWith(".nim"):
       shell("nim", "c", "--verbosity:0", "-r", testf)
+
+task "test-all", "Runs test-unit and test-spec":
+  runTask("test-unit")
+  runTask("test-spec")
