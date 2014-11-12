@@ -1,7 +1,15 @@
+import critbits
 import strtabs
+export strtabs.`[]`
+export strtabs.`[]=`
 
 type
   State* = object of RootObj
-    map: StringTableRef
+    map: CritBitTree[StringTableRef]
 
-proc hellothing*() = echo "hello"
+proc `.`(s: State, key: string): StringTableRef =
+  if s.map.contains(key):
+    return s.map[key]
+  else:
+    s.map[key] = newStringTable(modeCaseSensitive)
+    return s.map[key]
