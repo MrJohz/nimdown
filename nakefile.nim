@@ -5,6 +5,7 @@ import terminal
 
 const
   ROOT_TEST_DIR = "tests"
+  SRC_DIR = "src"
   BIN_DIR = "bin"
   BIN_NAME = "nimdown" & ExeExt
 
@@ -14,8 +15,9 @@ task "clean", "Removes nimcache folders, compiled exes":
   removeDir(BIN_DIR)
 
 task "build", "Builds nimdown executable":
-  createDir(BIN_DIR)
-  direshell("nim", "c", "--verbosity:0", "--out:" & (BIN_DIR / BIN_NAME), "nimdown.nim")
+  withDir(SRC_DIR):
+    createDir(".." / BIN_DIR)
+    direshell("nim", "c", "--verbosity:0", "--out:" & (".." / BIN_DIR / BIN_NAME), "nimdown.nim")
 
 task "test-spec", "Test nimdown against the CommonMark spec (in ./CommonMark":
   if needsRefresh(BIN_NAME, "nimdown.nim"):

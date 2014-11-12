@@ -1,4 +1,4 @@
-import preprocessors
+import "../nimdownpkg/preprocessors"
 import streams
 
 proc parse*(input: string): string =
